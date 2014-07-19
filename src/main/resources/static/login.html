@@ -34,6 +34,15 @@ function loginCtrl($scope)
 	$scope.login=$community.login.basic;
 	$scope.register=$community.register;
 	$scope.user = $community.user;
+	$(document).on("community.register.waiting",function()
+		{
+		$scope.register.waiting=true;
+		})
+	$(document).on("community.register.done",function()
+		{		
+		$scope.register.waiting=false;
+		$scope.$apply();
+		})
 	$(document).on("community.logged community.logout",function()
 		{				
 		$scope.$apply();
@@ -119,7 +128,7 @@ function loginCtrl($scope)
 	                    </div>
 	                    <div class="panel-body">
 	                    	<div class="form-group">
-	                       	Ti Abbiamo inviato una mail
+	                       	We have sent you a mail..
 	                       	</div>
 	                       <a ng-click="view.page='login'" class="btn btn-lg btn-success btn-block">Login</a>
 	                    </div>
@@ -133,8 +142,10 @@ function loginCtrl($scope)
 	                        <h3 class="panel-title">Register</h3>
 	                    </div>
 	                    <div class="panel-body">
-	                    	
-	                        <form role="form" action="/community/login">                        
+	                    	<div class="form-group" ng-show="register.waiting">
+	                    		Waiting please...
+	                    	</div>
+	                        <form role="form" action="/community/login" ng-hide="register.waiting">                        
 	                            <fieldset>
 	                                <div class="form-group">
 	                                    <input class="form-control" placeholder="E-mail" ng-model="register.mail" type="email" autofocus>

@@ -18,10 +18,20 @@ var $community=
 		psw2:"test",
 		"try":function()
 			{
-			$.get("/community/register",JSON.parse(JSON.stringify(this)),function(data)
-					{						
-					$(document).trigger("community.register");
-					},"json");
+			$(document).trigger("community.register.waiting");
+			$.ajax({
+					url:"/community/register",
+					data:JSON.parse(JSON.stringify(this)),
+					complete: function()
+						{
+						$(document).trigger("community.register.done");
+						},							
+					success:function(data)			
+						{						
+						$(document).trigger("community.register");
+						},
+					dataType:"json"
+					});
 			/*
 			$community.services().register.send(this,function(data)
 					{					

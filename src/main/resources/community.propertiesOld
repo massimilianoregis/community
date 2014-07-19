@@ -17,7 +17,7 @@ smtp.auth		=	true
 community.root	=	/Users/max/Documents/data/community
 
 #community root for db's directory
-community.db.url 	= jdbc:mysql://localhost:3306/landcycle
-community.db.driver = com.mysql.jdbc.Driver
-community.db.user 	= root
-community.db.psw 	= root
+community.db.url 	= jdbc:h2:file:/Users/max/Documents/data/community/db;mode=db2
+community.db.driver = org.h2.Driver
+community.db.user 	= test
+community.db.psw 	= test
