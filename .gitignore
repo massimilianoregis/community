@@ -28,3 +28,5 @@ local.properties
 target/
 */target/**
 *~
+
+src/main/resources/community.properties
