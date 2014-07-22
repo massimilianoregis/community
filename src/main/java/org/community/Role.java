@@ -1,5 +1,7 @@
 package org.community;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.PostLoad;
@@ -9,9 +11,12 @@ import org.community.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Configurable
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-public class Role {
+public class Role implements Serializable{
 	static public String USER = "user";
 	static public String ADMIN = "admin";
 
@@ -30,6 +35,7 @@ public class Role {
 	public Role(String role, String company)
 		{
 		this.company=company;
+		this.name=role;
 		if(company==null)	this.id=role;
 		else				this.id=company+"."+role;
 		}

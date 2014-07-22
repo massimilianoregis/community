@@ -14,41 +14,10 @@
 
     <!-- SB Admin CSS - Include with every page -->
     <link href="css/sb-admin.css" rel="stylesheet">
-	<link rel="stylesheet" href="http://daneden.github.io/animate.css/animate.min.css" />
-	 <style>
-    	.macumba .panel-default>.panel-heading
-    		{
-    		height: 0;
-			padding: 0;
-			border: none;
-    		}
-    	.macumba .panel-body
-    		{
-    		margin-top: 50px;
-    		}
-    	.macumba .panel-title 
-    		{
-    		background-image: url(http://www.moriana.it/img/logologin.png);
-    		background-size: cover;
-			width: 95px;
-			height: 95px;
-			border-radius: 100px;
-			margin: auto;
-			color: transparent;
-			position: absolute;
-			left: 50%;
-			margin-left: -49px;
-			margin-top: -37px;
-			border: solid 3px white;
-			}
-		.macumba .btn-login ,.macumba .btn-register
-			{
-			background-color:#278fc6
-			}
-    </style>	
+	<link rel="stylesheet" href="http://daneden.github.io/animate.css/animate.min.css" />	
 </head>
 
-<body ng-app="ngAnimate" class="macumba">
+<body ng-app="ngAnimate" class="">
 
 <script>
 function loginCtrl($scope)
@@ -63,7 +32,6 @@ function loginCtrl($scope)
 			},			
 		};
 	$scope.login=$community.login.basic;
-	$scope.randomPsw=true;
 	$scope.register=$community.register;
 	$scope.user = $community.user;
 	$(document).on("community.register.waiting",function()
@@ -99,7 +67,7 @@ function loginCtrl($scope)
 .animated
 	{
 	position:absolute;
-	width:92%;
+	width:94%;
 	}
 .ng-hide {
   /* this is just another form of hiding an element */
@@ -193,27 +161,15 @@ function loginCtrl($scope)
 	                                <div class="form-group">
 	                                    <input class="form-control" placeholder="E-mail" ng-model="register.mail" type="email" autofocus>
 	                                </div>
-	                                <SPAN ng-hide="randomPsw">
 	                                <div class="form-group">
 	                                    <input class="form-control" placeholder="Password" ng-model="register.psw" type="password">
 	                                </div>
 	                                <div class="form-group">
 	                                    <input class="form-control" placeholder="Password" ng-model="register.psw2" type="password">
 	                                </div>
-	                                <div class="form-group">                       
-	                                	<a ng-click="randomPsw=true" class="btn btn-lg btn-success btn-block">Random password</a>
-	                                </div>
-	                                </SPAN>
-	                                <div class="form-group" ng-show="randomPsw">                       
-	                                	<a ng-click="randomPsw=false" class="btn btn-lg btn-success btn-block">Insert password</a>
-	                                </div>
-	                                <div class="form-group">                       
-	                                	<a ng-click="register.try()" class="btn btn-lg btn-success btn-block btn-register">Register</a>
-	                                </div>
-	                                <hr>   
-	                                <div class="form-group text-center">
-	                                  <a ng-click="view.page='login'">Have you already an Account?<BR> access here!</a>
-	                                </div>  
+	                                                       
+	                                <a ng-click="register.try()" class="btn btn-lg btn-success btn-block">Register</a>
+	                                <a ng-click="view.page='login'" class="btn btn-lg btn-success btn-block">Login</a>
 	                            </fieldset>
 	                        </form>
 	                        
@@ -238,23 +194,17 @@ function loginCtrl($scope)
 	                                <div class="form-group">
 	                                    <input class="form-control" placeholder="Password" ng-model="login.psw" type="password">
 	                                </div>
-	                                <!--div class="checkbox">
+	                                <div class="checkbox">
 	                                    <label>
 	                                        <input name="remember" type="checkbox" value="Remember Me">Remember Me
 	                                    </label>
-	                                </div-->
-	                                 
-	                                <div class="form-group text-center">                          
-	                                	<a ng-click="login.try()" class="btn btn-lg btn-success btn-block btn-login">Access</a>
 	                                </div>
-	                                <div class="form-group text-center">
-	                                  <a ng-click="view.page='remember'">Have you forgot the password?</a>
-	                                </div>
-	                                <hr>   
-	                                <div class="form-group text-center">
-	                                  <a ng-click="view.page='register'">Haven't you an Account?<BR> subscribe here!</a>
-	                                </div>     
-	                                
+	                                <div class="form-group">
+	                                  <a ng-click="view.page='remember'">remember my mail</a>
+	                                </div>      
+	                                                          
+	                                <a ng-click="login.try()" class="btn btn-lg btn-success btn-block">Login</a>
+	                                <a ng-click="view.page='register'" class="btn btn-lg btn-success btn-block">Register</a>
 	                            </fieldset>
 	                        </form>
 	                        

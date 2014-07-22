@@ -1,5 +1,7 @@
 package org.community;
 
+import java.sql.Driver;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Transient;
@@ -18,8 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Admin 
 	{
-	@Autowired	private Community community;
-	
+	@Autowired	private Community community;	
 	@Autowired	private CommunityRepository repository;	
 	@Autowired	private UserRepository userRepository;
 	@Autowired	private RoleRepository roleRepository;
@@ -27,6 +28,7 @@ public class Admin
 	@Value("${welcome.url}")		private String wUrl;
 	@Value("${welcome.from}")		private String wfrom;
 	@Value("${welcome.subject}")	private String wSubject;
+	private List<Class<Driver>> drivers;
 		
 	public Community getCommunity(String name)
 		{
@@ -37,14 +39,23 @@ public class Admin
 		{
 		return repository.findAll();
 		}
-	@Transient
+	public List<String> driverList()
+		{		
+		List<String> result= new ArrayList<String>();
+		for(Class driver:drivers)
+			result.add(driver.getName());
+		return result;
+		}
+
 	public void addCommunity(String name,String mail)
 		{
 		
 		Community comm = new Community(name,userRepository,roleRepository,basePath,new Envelope(wfrom,wSubject,wUrl));
-			comm.addRole(Role.USER);
-			comm.addRole(Role.ADMIN);
+		
+			comm.addRole(Role.USER);		
+			comm.addRole(Role.ADMIN);		
 			try{comm.addUser(mail).save();}catch(Exception e){}
+			comm.getUser(mail).addRole(comm.getUserRole());
 			comm.getUser(mail).addRole(comm.getAdminRole());
 		repository.save(comm);
 		}

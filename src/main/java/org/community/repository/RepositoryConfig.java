@@ -36,6 +36,7 @@ public class RepositoryConfig {
 	@Value("${community.db.driver}") private String dbDriver;
 	@Value("${community.db.user}") private String dbUser;
 	@Value("${community.db.psw}") private String dbPsw;
+	@Value("${community.db.dialect}") private String dbDialect;
 
 	 @Autowired
 	    ApplicationContext context; 
@@ -100,6 +101,7 @@ public class RepositoryConfig {
 	
 //	rv.setDatabase(Database.H2);
 	//rv.setDatabasePlatform(H2Dialect.class.getName());
+	rv.setDatabasePlatform(this.dbDialect);
 	
 	rv.setGenerateDdl(false);
 	rv.setShowSql(true);

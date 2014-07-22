@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>stubber</groupId>
-  <artifactId>stubber</artifactId>
+  <groupId>community</groupId>
+  <artifactId>community</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 	 <parent>
         <groupId>org.springframework.boot</groupId>
@@ -94,7 +94,7 @@
     
 
     <properties>
-        <start-class>stubber.Application</start-class>
+        <start-class>org.community.CommunityApplication</start-class>
          <java.version>1.6</java.version>
     </properties>
 
@@ -107,6 +107,16 @@
             <plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.2</version>
+				<!--configuration>
+		          <webResources>		            
+		            <resource>		              
+		              <directory>src/main/resources</directory>
+		              <includes>
+		                <include>community.properties</include>
+		              </includes>		              
+		            </resource>
+		          </webResources>
+		        </configuration-->
 			</plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

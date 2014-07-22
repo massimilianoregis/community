@@ -1,5 +1,6 @@
 package org.community.services;
 
+import java.io.Serializable;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -12,7 +13,9 @@ import org.community.repository.RoleRepository;
 import org.community.security.Secured;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 
@@ -76,6 +79,7 @@ public class CommunityService
 	@RequestMapping("/community/login")
 	public @ResponseBody User login(String realm, String mail, String psw) throws Exception
 		{		
+		System.out.println("/community/login");
 		Community community = admin.getCommunity(realm);
 		return community.login(mail, psw);		
 		}
@@ -84,12 +88,21 @@ public class CommunityService
 		{		
 		Community community = admin.getCommunity(realm);
 		community.logout();		
-		}
-	
+		}	
 	@RequestMapping("/community/me")
 	public @ResponseBody User me(String realm)
 		{				
 		Community community = admin.getCommunity(realm);
 		return community.me();		
 		}
+	@RequestMapping(value="/community/user/save", method = RequestMethod.POST)
+	public @ResponseBody void me(String realm,@RequestBody User user)
+		{				
+		System.out.println(user.getFirstName());
+		this.admin.getCommunity(realm).save(user);
+		}
+	
+
+	
 	}
+

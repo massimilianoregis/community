@@ -93,17 +93,21 @@ public class Community
 		{
 		return this.repository.findOne(mail);
 		}
+	public Role getUserRole()
+		{
+		return this.roles.findOne(new Role(Role.USER,this.name).getId());
+		}
 	public Role getAdminRole()
 		{
-		return new Role(this.name,Role.ADMIN);
+		return this.roles.findOne(new Role(Role.ADMIN,this.name).getId());
 		}
 	public Role getRole(String name)
 		{
-		return this.roles.findOne(new Role(this.name,name).getId());
+		return this.roles.findOne(new Role(name,this.name).getId());
 		}
 	public void addRole(String name)
 		{
-		this.roles.save(new Role(this.name,name));
+		this.roles.save(new Role(name,this.name));
 		}
 	public List<Role> getRoles()
 		{
@@ -113,7 +117,7 @@ public class Community
 	public void save(User user)
 		{
 		System.out.println("save...."+user.getMail());
-		user.getRoot().mkdirs();
+		try{user.getRoot().mkdirs();}catch(Exception e){}
 		repository.save(user);
 		}
 	@JsonIgnore

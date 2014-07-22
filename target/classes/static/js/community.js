@@ -20,7 +20,7 @@ var $community=
 			{
 			$(document).trigger("community.register.waiting");
 			$.ajax({
-					url:"/community/register",
+					url:"community/register",
 					data:JSON.parse(JSON.stringify(this)),
 					complete: function()
 						{
@@ -42,18 +42,27 @@ var $community=
 	login:
 		{
 		basic:
-			{			
-			test:"pippo",
-			mail:"massimiliano.regis@ekaros.it",
-			psw:"pippo",
+			{						
+			mail:"pippo@ekaros.it",
+			psw:"test",
 			"try":function()
 				{				
-				$.get("/community/login",JSON.parse(JSON.stringify(this)),function(data)
-						{		
-						$.extend($community.user,data);
-						$community.user.logged=true;
-						$(document).trigger("community.logged");
-						},"json");
+				$.ajax(
+						{
+						url:"community/login",
+						data:JSON.parse(JSON.stringify(this)),
+						success:function(data)						
+							{		
+							$.extend($community.user,data);
+							$community.user.logged=true;
+							$(document).trigger("community.logged");
+							},
+						error:function(data)
+							{
+							$(document).trigger("community.logerror");
+							},
+						dataType:"json"
+						});
 				/*
 				$community.services().login.send(this,function(data)
 					{					
@@ -83,10 +92,7 @@ var $community=
 			}
 		},
 	user:
-		{
-		mail:"",
-		name:"",
-		secondName:"",
+		{				
 		password:
 			{
 			reset:function(){},
@@ -94,17 +100,29 @@ var $community=
 			},
 		logout:function()
 			{
-			$.get("/community/logout");
+			$.get("community/logout");
 			this.logged=false;
 			$(document).trigger("community.logout");
 			},
-		save:function(){},
+		save:function()
+			{
+			var data =$.extend({},this);
+			data.password=null;
+			$.ajax(
+					{
+					url:"community/user/save",
+					data:JSON.stringify(data),
+					dataType:"json",					
+					contentType: 'application/json',				    
+					type:"POST"
+					})
+			},
 		show:function(){}
 		}
 	};
 $(function()
 	{
-	$.get("/community/me",function(data)
+	$.get("community/me",function(data)
 			{		
 			if(data==null) return;
 			$.extend($community.user,data);

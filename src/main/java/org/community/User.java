@@ -1,10 +1,12 @@
 package org.community;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
@@ -12,21 +14,22 @@ import javax.persistence.Transient;
 
 import org.community.exceptions.InvalidPassword;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 
-@SuppressWarnings("serial")
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
-public class User 
+public class User implements Serializable 
 {	
-	private boolean justbuild=true;
+	@Transient private boolean justbuild=true;
 	@Id
 	private String mail;
 	private String psw;
-	private String first_name;
-	private String second_name;
+	private String firstName;
+	private String secondName;
 	private String root;
-	//private Map jsonData;
+	@Column(columnDefinition="TEXT") private String jsondata;
 	@ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 	private Set<Role> roles = new HashSet<Role>(); 
 	
@@ -47,7 +50,7 @@ public class User
 		{
 		this.cm=cm;
 		}
-	public void setName(String fname, String sname)	{this.first_name=fname; this.second_name=sname;}
+	public void setName(String fname, String sname)	{this.firstName=fname; this.secondName=sname;}
 	public void setPassword(String psw)				
 		{
 		if(psw==null)
@@ -61,10 +64,13 @@ public class User
 		}
 	
 	public String getMail() 		{return mail;}
-	public String getFirstName() 	{return first_name;}
-	public String getSecondName() 	{return second_name;}
+	public String getFirstName() 	{return firstName;}
+	public String getSecondName() 	{return secondName;}
 	public String getPsw() 			{return psw;}	
 	public Set<Role> getRoles() 	{return roles;}
+	public String getJsondata() {
+		return jsondata;
+	}
 	
 	@JsonIgnore
 	public File getRoot() 			{return new File(root);}
@@ -83,6 +89,7 @@ public class User
 		{
 		
 		}
+
 	public boolean canAccess(String role, String company)
 		{
 		for(Role r : roles)
