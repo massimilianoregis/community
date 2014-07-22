@@ -30,3 +30,5 @@ target/
 *~
 
 src/main/resources/community.properties
+
+src/main/resources/community.propertiesEmbed
