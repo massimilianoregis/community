@@ -29,25 +29,23 @@ public class Community
 	@Autowired @OneToOne(cascade=CascadeType.ALL) private Envelope welcome;
 	
 	@Transient
-	@Autowired
-	private UserRepository repository;
+	static public UserRepository repository;
 	
-	@Transient
-	@Autowired
-	private RoleRepository roles;
+	@Transient	
+	static public RoleRepository roles;
 	
 	public Community()
 		{
 		
 		}
-	public Community(String name,UserRepository repository,RoleRepository roleRepository,String root, Envelope welcome)
-		{
-		this.roles=roleRepository;
-		this.repository=repository;
+	public Community(String name,String root, Envelope welcome)
+		{				
+		if(name==null) name="";
 		this.root=root;
 		this.welcome=welcome;
 		this.name=name;
 		}
+	
 	public String getName() 
 		{
 		return name;
@@ -64,8 +62,8 @@ public class Community
 	public User addUser(String mail) throws UserJustPresent
 		{
 		if(repository.exists(mail)) throw new UserJustPresent();
-		User user = new User(mail,this, new File(this.root,mail).getAbsolutePath());
-		
+		User user = new User(mail,this, new File(this.root,mail).getAbsolutePath());			
+			
 		return user;
 		}
 	
@@ -79,7 +77,8 @@ public class Community
 		user.setCommunity(this);	
 		if(user!=null && user.getPsw().equals(psw)) 
 			{			
-			if(!user.canAccess(Role.USER,this.name)) throw new UserNotFound();				
+			
+			if(this.name!=null && !user.canAccess(Role.USER,this.name)) throw new UserNotFound();				
 			SessionData.setUser(user);
 			return user;
 			}
@@ -104,26 +103,35 @@ public class Community
 	public Role getRole(String name)
 		{
 		return this.roles.findOne(new Role(name,this.name).getId());
-		}
+		}	
 	public void addRole(String name)
 		{
 		this.roles.save(new Role(name,this.name));
 		}
 	public List<Role> getRoles()
-		{
+		{		
 		return this.roles.findAll();
 		}
 	@Transactional
 	public void save(User user)
-		{
-		System.out.println("save...."+user.getMail());
+		{		
 		try{user.getRoot().mkdirs();}catch(Exception e){}
 		repository.save(user);
 		}
 	@JsonIgnore
 	public List<User> getUsers()
 		{		
-		return repository.findAll();
+		return repository.findDistinctUserByRolesCompany(this.name);
+		}
+	public void resetPasswordMail(User user)
+		{
+		System.out.println("send to:"+user.getMail()+" "+welcome);
+		welcome.send(user.getMail(),user);		
+		}
+	public void sendPasswordMail(User user)
+		{
+		System.out.println("send to:"+user.getMail()+" "+welcome);
+		welcome.send(user.getMail(),user);		
 		}
 	public void sendWelcomeMail(User user)
 		{

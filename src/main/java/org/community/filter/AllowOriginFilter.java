@@ -25,12 +25,10 @@ public class AllowOriginFilter implements Filter {
 		response.setHeader("Access-Control-Max-Age", "3600");
 		response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 		
-		System.out.println(((HttpServletRequest)req).getRequestURI());
+		System.out.println(">"+((HttpServletRequest)req).getRequestURI()+"<");
 		SessionData.setSession(((HttpServletRequest)req).getSession(true));
-		System.out.println(SessionData.getUser());
-		chain.doFilter(req, res);
-		System.out.println(SessionData.getUser());		
 		
+		chain.doFilter(req, res);
 	}
 
 	public void init(FilterConfig filterConfig) {}

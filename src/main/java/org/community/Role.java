@@ -34,8 +34,9 @@ public class Role implements Serializable{
 		}
 	public Role(String role, String company)
 		{
-		this.company=company;
+		this.company=company;		
 		this.name=role;
+		if(company!=null && company.isEmpty()) company=null;
 		if(company==null)	this.id=role;
 		else				this.id=company+"."+role;
 		}

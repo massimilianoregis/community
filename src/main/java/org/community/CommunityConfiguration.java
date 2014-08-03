@@ -54,6 +54,7 @@ public class CommunityConfiguration
 			result.setPort(smtpPort);
 			result.setUsername(smtpUser);
 			result.setPassword(smtpPassword);
+			System.out.println(wUrl);
 			if(smtpAuth)
 				{
 				result.getJavaMailProperties().setProperty("mail.smtp.auth", "true");

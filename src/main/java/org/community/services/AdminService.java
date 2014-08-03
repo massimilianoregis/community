@@ -1,5 +1,7 @@
 package org.community.services;
 
+import java.io.FileOutputStream;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -26,13 +28,15 @@ public class AdminService
 	@Autowired
 	private InitProperties properties;
 	
-	@RequestMapping("/community/init")
-	public @ResponseBody InitProperties execute(String driver, String url, String usr, String psw) throws Exception
+	@RequestMapping("/community/properties")
+	public @ResponseBody Properties get(String driver, String url, String usr, String psw) throws Exception
 		{
 		Resource resource = new ClassPathResource("community.properties");
 		Properties props = PropertiesLoaderUtils.loadProperties(resource);
-		System.out.println(props);
-		return properties;
+		
+		
+		props.store(new FileOutputStream(resource.getFile()), "Saved at "+new Date());
+		return props;
 		}
 	@RequestMapping("/community/admin/add")
 	public @ResponseBody void execute(String realm, String mail) throws Exception

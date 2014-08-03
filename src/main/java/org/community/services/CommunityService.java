@@ -27,10 +27,10 @@ public class CommunityService
 	private Admin admin;
 	@Autowired
 	private RoleRepository roleRepository;
+	private boolean everInMaster=true;
 	
 	
-	
-	@Secured("Admin")	
+	//@Secured("Admin")	
 	@RequestMapping("/community/list")
 	public @ResponseBody List<User> list(String realm) throws Exception
 		{		
@@ -44,7 +44,9 @@ public class CommunityService
 		{
 		Community community = admin.getCommunity(realm);
 		
-		community.getUser(mail).addRole(roleRepository.findOne(role));		
+		community.getUser(mail).addRole(roleRepository.findOne(role));
+		if(everInMaster && realm!=null && !realm.isEmpty())			
+			admin.getMasterCommunity().getUser(mail).addUserRole();			
 		}
 	
 	/** ROLES **/
@@ -56,7 +58,7 @@ public class CommunityService
 	@RequestMapping("/community/role/add")
 	public @ResponseBody void addRole(String realm, String role) throws Exception
 		{
-		admin.getCommunity(realm).addRole(role);
+		admin.getCommunity(realm).addRole(role);		
 		}
 	@RequestMapping("/community/role/list")
 	public @ResponseBody List<Role> getRoles(String realm) throws Exception
@@ -65,6 +67,12 @@ public class CommunityService
 		}
 	/** /ROLES **/
 	
+	@RequestMapping("/community/user/confirm")
+	public @ResponseBody void confitm(String id) throws Exception
+		{
+		this.admin.executePending(id);		
+		}
+	
 	@RequestMapping("/community/register")
 	public @ResponseBody User execute(String realm,String mail, String psw, String first_name, String second_name) throws Exception
 		{		
@@ -72,7 +80,7 @@ public class CommunityService
 		User user = community.addUser(mail); 
 			user.setName(first_name,second_name);
 			user.setPassword(psw);
-		user.save();
+		user.register();
 		
 		return user;
 		}	

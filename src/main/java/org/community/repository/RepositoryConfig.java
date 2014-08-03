@@ -54,7 +54,7 @@ public class RepositoryConfig {
 	        return datasource;
 	    }
 
-	  @Bean
+	/*  @Bean
 	  public SessionFactory sessionFactory() throws Exception
 	  {
 		  System.out.println("SessionFactory");
@@ -73,7 +73,7 @@ public class RepositoryConfig {
 		SessionFactory session =sessionFactoryBean.getObject();
 		
 	      return session;
-	  }
+	  }*/
 	  
 	  @Bean 
 	  public EntityManagerFactory entityManagerFactory() {
@@ -103,7 +103,7 @@ public class RepositoryConfig {
 	//rv.setDatabasePlatform(H2Dialect.class.getName());
 	rv.setDatabasePlatform(this.dbDialect);
 	
-	rv.setGenerateDdl(false);
+	rv.setGenerateDdl(true);
 	rv.setShowSql(true);
 	
 	return rv;

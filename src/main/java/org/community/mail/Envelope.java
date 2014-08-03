@@ -1,18 +1,17 @@
 package org.community.mail;
 
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.Map;
-import java.util.Random;
 
 import javax.mail.internet.MimeMessage;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Transient;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.ui.velocity.VelocityEngineFactoryBean;
@@ -31,7 +30,7 @@ public class Envelope {
 	private String subject;
 	private String url;
 	@Transient
-	@Autowired private JavaMailSender postman;	
+	static public JavaMailSender postman;	
 	public Envelope()
 		{
 		}
@@ -69,12 +68,17 @@ public class Envelope {
 				vf.setPreferFileSystemAccess(false);			
 			String body = VelocityEngineUtils.mergeTemplateIntoString(vf.createVelocityEngine(), url.getPath(), model);
 			
+			VelocityContext context = new VelocityContext(model);				
+			StringWriter writer = new StringWriter();
+			Velocity.evaluate(context, writer, "VELOCITY", this.subject);			
+			
 			MimeMessage mimeMessage = this.postman.createMimeMessage();
 			MimeMessageHelper message = new MimeMessageHelper(mimeMessage);
 				message.setFrom(this.from);
 				message.setTo(to);
 				message.setSubject(this.subject);
-				message.setText(body);
+				message.setText(body,true);
+				
 			this.postman.send(mimeMessage);
 			}
 		catch(Exception e)

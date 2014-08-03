@@ -14,4 +14,5 @@ public interface UserRepository extends Repository<User, String>
 	public User findOne(String mail);
 	public void delete(String entity);
 	public boolean exists(String entity);
+	public List<User> findDistinctUserByRolesCompany(String name);	
 }

@@ -3,6 +3,7 @@ package org.community;
 import java.io.File;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -16,22 +17,23 @@ import org.community.exceptions.InvalidPassword;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 public class User implements Serializable 
-{	
-	@Transient private boolean justbuild=true;
+{		
 	@Id
 	private String mail;
-	private String psw;
+	private String psw;	
 	private String firstName;
-	private String secondName;
+	private String lastName;
 	private String root;
+	//private List<String> tags;
+	@Transient
+	private String registerId;
 	@Column(columnDefinition="TEXT") private String jsondata;
 	@ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-	private Set<Role> roles = new HashSet<Role>(); 
+	private Set<Role> roles = new HashSet<Role>();
 	
 	@Transient	
 	private Community cm;
@@ -45,32 +47,33 @@ public class User implements Serializable
 		this.mail=mail;
 		this.cm=cm;
 		this.root=root;
+		this.psw=AutomaticPassword.newPassword();		
 		}
 	public void setCommunity(Community cm)
 		{
 		this.cm=cm;
 		}
-	public void setName(String fname, String sname)	{this.firstName=fname; this.secondName=sname;}
+	
+	public void setName(String fname, String sname)	{this.firstName=fname; this.lastName=sname;}
 	public void setPassword(String psw)				
 		{
-		if(psw==null)
-			psw="admin";
+		if(psw!=null && !psw.isEmpty())
+			this.psw=psw;
 //		byte[] bytesOfMessage = psw.getBytes("UTF-8");
 //
 //		MessageDigest md = MessageDigest.getInstance("MD5");
 //		byte[] thedigest = md.digest(bytesOfMessage);
 //		this.psw=new String(thedigest);
-		this.psw=psw;
+		
 		}
 	
 	public String getMail() 		{return mail;}
 	public String getFirstName() 	{return firstName;}
-	public String getSecondName() 	{return secondName;}
+	public String getLastName() 	{return lastName;}
 	public String getPsw() 			{return psw;}	
 	public Set<Role> getRoles() 	{return roles;}
-	public String getJsondata() {
-		return jsondata;
-	}
+	public String getRegisterId() 	{return registerId;}
+	public String getJsondata() 	{return jsondata;}
 	
 	@JsonIgnore
 	public File getRoot() 			{return new File(root);}
@@ -83,11 +86,11 @@ public class User implements Serializable
 		}
 	public void resetPassword()
 		{
-		
+		this.cm.resetPasswordMail(this);
 		}
 	public void sendPassword()
 		{
-		
+		this.cm.sendPasswordMail(this);
 		}
 
 	public boolean canAccess(String role, String company)
@@ -99,16 +102,23 @@ public class User implements Serializable
 			}
 		return false;
 		}
+	public void addUserRole()
+		{
+		addRole(this.cm.getUserRole());
+		}
 	public void addRole(Role role)
 		{
 		this.roles.add(role);
 		}
-	public void save()
+	public void register()
 		{
-		boolean send = this.justbuild;
-		this.justbuild=false;
-		cm.save(this);
-		if(send) this.sendWelcome();		
+		this.save();
+		this.registerId = new Pending(this,this.cm.getUserRole()).save();
+		this.sendWelcome();
+		}
+	public void save()
+		{		
+		Community.repository.save(this);		
 		}
 	public void sendWelcome()
 		{

@@ -80,11 +80,19 @@ var $community=
 			},
 		facebook:
 			{
-			"try":function(){}
+			"try":function()
+				{
+				var form = $('<FORM ACTION="/connect/facebook" METHOD="post"></FORM>');				
+				form.submit()
+				}
 			},
 		twitter:
-			{
-			"try":function(){}
+			{			
+			"try":function()
+				{
+				var form = $('<FORM ACTION="/connect/twitter" METHOD="post"></FORM>');				
+				form.submit()				
+				}
 			},
 		gplus:
 			{

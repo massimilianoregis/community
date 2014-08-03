@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app>
 
 <head>
 
@@ -19,7 +19,39 @@
     <link href="css/sb-admin.css" rel="stylesheet">
 
 </head>
-
+<script>
+function propertiesCtrl($scope)
+	{
+	
+	$.get("/community/properties",function(data)
+		{
+		
+		$scope.db={
+				driver:data["community.db.driver"],
+				url:data["community.db.url"],
+				psw:data["community.db.psw"],
+				user:data["community.db.user"]
+				}
+		$scope.smtp={
+				url:data["smtp.url"],
+				user:data["smtp.user"],
+				psw:data["smtp.password"],
+				port:data["smtp.port"]
+				}		
+		$scope.$apply();
+		})	
+		
+	$scope.confirm=function()
+		{			
+		alert($scope.adminMail);
+		$.get(
+			"/community/admin/add",
+			{mail:$scope.adminMail},
+			function(){document.location.href="/login.html?"+Math.random()}
+			);
+		}
+	}
+</script>
 <body>
 
     <div id="wrapper">
@@ -352,7 +384,7 @@
             <!-- /.navbar-static-side -->
         </nav>
 
-        <div id="page-wrapper">
+        <div id="page-wrapper" ng-controller="propertiesCtrl">
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Startup</h1>
@@ -370,21 +402,21 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body"> 
                         	<div class="form-group">
-	                        	<select class="form-control">
-								  <option>MySql</option>
+	                        	<select class="form-control" ng-model="db.url">
+								  <option value="jdbc:mysql://localhost:3306/landcycle">MySql</option>
 								  <option>Embedded</option>
 								  <option>Derby</option>
 								  <option>Oracle</option>								  
 								</select>
 	                        </div>                       	
                         	<div class="form-group">
-	                        	<INPUT class="form-control" PLACEHOLDER="Url">
+	                        	<INPUT class="form-control" ng-model="db.url" PLACEHOLDER="Url">
 	                        </div>
 	                        <div class="form-group">
-	                        	<INPUT class="form-control" PLACEHOLDER="User">
+	                        	<INPUT class="form-control" ng-model="db.user" PLACEHOLDER="User">
 	                        </div>
 	                        <div class="form-group">
-	                        	<INPUT class="form-control" PLACEHOLDER="Psw">
+	                        	<INPUT class="form-control" ng-model="db.psw" PLACEHOLDER="Psw">
 	                        </div>                        	
                         </div>
                         <!-- /.panel-body -->
@@ -400,17 +432,33 @@
                         <!-- /.panel-heading -->
                         <div class="panel-body"> 
                         	<div class="form-group">
-	                        	<INPUT class="form-control" PLACEHOLDER="Url">
+	                        	<INPUT class="form-control" PLACEHOLDER="Url" ng-model="smtp.url">
 	                        </div>                       	
                         	<div class="form-group">
-	                        	<INPUT class="form-control" PLACEHOLDER="Port">
+	                        	<INPUT class="form-control" PLACEHOLDER="Port" ng-model="smtp.port">
 	                        </div>
 	                        <div class="form-group">
-	                        	<INPUT class="form-control" PLACEHOLDER="User">
+	                        	<INPUT class="form-control" PLACEHOLDER="User" ng-model="smtp.user">
 	                        </div>
 	                        <div class="form-group">
-	                        	<INPUT class="form-control" PLACEHOLDER="Psw">
+	                        	<INPUT class="form-control" PLACEHOLDER="Psw" ng-model="smtp.psw">
 	                        </div>                        	
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Admin
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body"> 
+                        	<div class="form-group">
+	                        	<INPUT class="form-control" PLACEHOLDER="Administrator mail" ng-model="adminMail">
+	                        </div>                       	                        	                       	
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -418,6 +466,10 @@
                 </div>
             </div>
             <!-- /.row -->
+            
+            <div class="form-group text-center">                          
+	         	<a ng-click="confirm()" class="btn btn-lg btn-success btn-block btn-login">Save</a>
+	        </div>
         </div>
         <!-- /#page-wrapper -->
 
@@ -425,7 +477,9 @@
     <!-- /#wrapper -->
 
     <!-- Core Scripts - Include with every page -->
+    
     <script src="js/jquery-1.10.2.js"></script>
+    <script src="js/angular.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
 
