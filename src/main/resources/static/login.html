@@ -56,23 +56,45 @@
 <body ng-app="ngAnimate" class="macumba">
 
 <script>
+
 function loginCtrl($scope)
 	{	
+	var act=$scope;
 	$scope.view=
-		{
+		{		
 		show:function()
 			{
 			if($community.user.logged) return "logged";
 			if(this.page!=null) return this.page;
+			
 			return "login";
 			},			
 		};
+	$scope.$watch("view.page",function(data)
+		{
+		if(data=="QR")
+			setTimeout(function()
+					{
+					$("#webcam").show();
+					$("video").css(
+							{
+							position:"absolute",
+							width:$("#qrpanel").width(),
+							height:$("#qrpanel").height(),
+							top:$("#qrpanel").offset().top,
+							left:$("#qrpanel").offset().left
+							});	
+					},1000);
+		else
+			$("#webcam").hide();
+		})
 	$scope.login=$community.login.basic;
 	$scope.facebook=$community.login.facebook;
 	$scope.twitter=$community.login.twitter;
 	$scope.randomPsw=true;
 	$scope.register=$community.register;
 	$scope.user = $community.user;
+	
 	$(document).on("community.register.waiting",function()
 		{
 		$scope.register.waiting=true;
@@ -105,9 +127,12 @@ function loginCtrl($scope)
 <style>
 .animated
 	{
-	position:absolute;
-	width:92%;
-	bottom:20%;
+	position:relative;
+	width:100%;	
+	display:inline-block;
+    vertical-align:middle;
+    max-height: 99%;
+	overflow: auto;
 	}
 .ng-hide {
   /* this is just another form of hiding an element */
@@ -182,6 +207,33 @@ function loginCtrl($scope)
 	                       	We have sent you a mail..
 	                       	</div>
 	                       <a ng-click="view.page='login'" class="btn btn-lg btn-success btn-block">Login</a>
+	                    </div>
+	                </div>
+	            </div>
+            	
+            	<!--QR-->
+	        	<div class="animated fading" ng-switch-when="QR">
+	                <div class="login-panel panel panel-default">
+	                    <div class="panel-heading">
+	                        <h3 class="panel-title">Register</h3>
+	                    </div>
+	                    <div class="panel-body">
+	                    	<div class="form-group" ng-show="register.waiting">
+	                    		Waiting please...
+	                    	</div>
+	                        <form role="form" action="/community/login" ng-hide="register.waiting">                        
+	                            <fieldset>
+	                                <div id="qrpanel">
+	                                    
+	                                </div>
+	                                
+	                                <hr>   
+	                                <div class="form-group text-center">
+	                                  <a ng-click="view.page='login'">Have you already an Account?<BR> access here!</a>
+	                                </div>  
+	                            </fieldset>
+	                        </form>
+	                        
 	                    </div>
 	                </div>
 	            </div>
@@ -261,8 +313,11 @@ function loginCtrl($scope)
 	                                <div class="form-group">	                                                         
 	                                	<a ng-click="twitter.try()" class="btn btn-social btn-block btn-twitter"><I class="fa fa-twitter"></I> Sign in with Twitter</a>
 	                                </div>
+	                                <div class="form-group">	                                                         
+	                                	<a ng-click="view.page='QR'" class="btn btn-social btn-block btn-google-plus"><I class="fa fa-qrcode"></I> Sign in with QR</a>
+	                                </div>
 	                                <div class="form-group text-center">
-	                                  <a ng-click="view.page='remember'">Have you forgot the password?</a>
+	                                  <a ng-click="view.page='remember'">did you forget the password?</a>
 	                                </div>
 	                                <hr>   
 	                                <div class="form-group text-center">
@@ -288,11 +343,12 @@ function loginCtrl($scope)
 	                            <fieldset>
 	                                <div class="form-group">
 	                                    <input class="form-control" placeholder="E-mail" ng-model="login.mail" type="email" autofocus>
-	                                </div>
-	                                
-	                                                    
+	                                </div>            
 	                                <a ng-click="login.remember()" class="btn btn-lg btn-success btn-block">Invia</a>
-	                                
+	                                <hr>   
+	                                <div class="form-group text-center">
+	                                  <a ng-click="view.page='login'">Have you already an Account?<BR> access here!</a>
+	                                </div>  
 	                            </fieldset>
 	                        </form>
 	                        
@@ -304,6 +360,11 @@ function loginCtrl($scope)
         </div>
     </div>
 
+
+	<div id="webcam" style="display: none;">		
+		<canvas id="qr-canvas" width="800" height="600"></canvas>								
+		<div id="outdiv"><video id="v" autoplay></video></div>
+	</div>
     <!-- Core Scripts - Include with every page -->
     <script src="js/jquery-1.10.2.js"></script>
     
@@ -314,11 +375,40 @@ function loginCtrl($scope)
     <script src="js/bootstrap.min.js"></script>
     <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
 
+	<script src="plugins/qrcam/llqrcode.js"></script>
+	<script src="plugins/qrcam/webqr.js"></script>
     <!-- SB Admin Scripts - Include with every page -->
     <script src="js/sb-admin.js"></script>
 <script>
  var myApp = angular.module('MyApp', ['ngAnimate']);
+ 
+ setwebcam(function(a)
+			{
+			alert(a);
+			});
  </script>
+ <style>
+ #qrpanel
+ 	{
+ 	width: 100%;
+	height: 200px;
+	border: solid 1px silver;	
+ 	}
+ #qr-canvas
+ 	{
+ 	display:none
+ 	}
+ #webcam
+	{
+	display: block;
+	//position: absolute;
+	//left: 398px;
+	//top: 311px;
+	z-index: 10000000000;
+	width: 220px;
+	height: 202px;
+	}
+ </style>
 </body>
 
 </html>

@@ -76,7 +76,10 @@ var $community=
 		qr:
 			{
 			"try":function(){},
-			show:function(){}	
+			show:function()
+				{
+				$("")
+				}	
 			},
 		facebook:
 			{
