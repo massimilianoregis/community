@@ -1,10 +1,8 @@
 package org.opencommunity.services;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.opencommunity.exception.InvalidJWT;
 import org.opencommunity.exception.UserNotFound;
 import org.opencommunity.objs.Community;
@@ -12,6 +10,7 @@ import org.opencommunity.objs.Pending;
 import org.opencommunity.objs.Role;
 import org.opencommunity.objs.User;
 import org.opencommunity.persistence.Repositories;
+import org.opencommunity.util.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +26,8 @@ import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.JWSHeader;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSSigner;
-import com.nimbusds.jose.JWSVerifier;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
 
 
 @Transactional("communityTransactionManager")
@@ -52,6 +49,8 @@ public class CommunityService
 		{						
 		return community.getUsers();		
 		}
+	
+	//salva utente
 	@RequestMapping(value="/community/user", method = RequestMethod.POST)
 	public @ResponseBody void me(@RequestBody User user)
 		{
@@ -60,11 +59,13 @@ public class CommunityService
 			 usr.setData(user.getData());
 			 usr.save();		
 		}
+	//leggi lista utenti
 	@RequestMapping(value= "/community/user",method=RequestMethod.GET)
 	public @ResponseBody List<User> userList() throws Exception
 		{						
 		return community.getUsers();		
 		}
+	//leggi utente singolo
 	@RequestMapping(value= "/community/user/{mail:.+}",method=RequestMethod.GET)
 	public @ResponseBody User user(@PathVariable String mail) throws Exception
 		{							
@@ -178,21 +179,8 @@ public class CommunityService
 	
 	@RequestMapping(value="/community/jwt")
 	public @ResponseBody String check(String jwt) throws InvalidJWT
-		{
-		try{
-			JWSObject object =JWSObject.parse(jwt);		
-			
-			CommunityService.JWTResponse jwtObject = json.readValue(object.getPayload().toString(), CommunityService.JWTResponse.class);
-			String secret = community.getSecretKey();
-			
-			JWSVerifier verifier = new MACVerifier(secret.getBytes());
-			if(!object.verify(verifier)) throw new InvalidJWT();
-			
-			return object.getPayload().toString();
-			}
-		catch (Exception e) {
-			throw new InvalidJWT();
-			}			
+		{			
+		return new JWT(jwt,this.community).getPayload();				
 		}
 	static public class RequestLogin
 		{

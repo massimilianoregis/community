@@ -79,6 +79,7 @@ public class Envelope
 				message.setSubject(this.subject);
 				message.setText(body,true);
 				
+			
 			this.postman.send(mimeMessage);
 			}
 		catch(Exception e)
