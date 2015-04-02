@@ -215,6 +215,7 @@ public class User implements Serializable
 		}
 	public InputStream getFile(String file) throws IOException
 		{
+		System.out.println(this.root);
 		return new FileInputStream(new File(this.root,file));
 		}
 //	public void setJsondata(String jsondata) throws Exception 

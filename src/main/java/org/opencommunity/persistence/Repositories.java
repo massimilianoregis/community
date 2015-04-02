@@ -12,15 +12,18 @@ public class Repositories {
 			RoleRepository roleRepository,
 			PendingRepository pendingRepository,
 			UserRepository userRepository,
+			EnvelopeRepository envelopeRepository,
 			JavaMailSender postman	
 			)
 		{		
 		user=userRepository;
 		role=roleRepository;		
 		pending=pendingRepository;
+		envelope=envelopeRepository;
 		}
 
 	public static PendingRepository pending;
 	public static RoleRepository role;
 	public static UserRepository user;
+	public static EnvelopeRepository envelope;
 }

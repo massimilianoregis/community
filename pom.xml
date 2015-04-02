@@ -3,14 +3,20 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>commerce</groupId>
 	<artifactId>community</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
+	<packaging>war</packaging>
 	<parent>
+		<!--groupId>moriana</groupId>
+		<artifactId>moriana-master-pom</artifactId>
+		<version>1.0.0-SNAPSHOT</version-->
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.1.4.RELEASE</version>
 	</parent>
-
+	
 	<dependencies>
+		
+	
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
@@ -22,14 +28,46 @@
 			<version>5.1.31</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+			<version>3.0.5.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjtools</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+		  	<artifactId>junit</artifactId>
+		  	<version>4.4</version>		  
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+		
+		
+		<dependency>
 			<groupId>org.springframework.social</groupId>
 			<artifactId>spring-social-facebook</artifactId>
 			<version>1.1.0.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>com.nimbusds</groupId>
-			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>2.10.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.social</groupId>
@@ -42,9 +80,15 @@
 			<version>1.1.0.RELEASE</version>
 		</dependency>
 		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>2.10.1</version>
+		</dependency>		
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
@@ -52,31 +96,8 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-messaging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-			<version>3.0.5.RELEASE</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>${aspectj.version}</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjtools</artifactId>
-			<version>${aspectj.version}</version>
-		</dependency>
+		</dependency>		
+		
 
 		<dependency>
 			<groupId>org.hsqldb</groupId>
@@ -103,21 +124,13 @@
 		  <artifactId>jackson-databind</artifactId>
 		  <version>2.3.3</version>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-		  	<artifactId>junit</artifactId>
-		  	<version>4.4</version>		  
-		</dependency>
+		
 		<dependency>
 			<groupId>net.tanesha.recaptcha4j</groupId>
 			<artifactId>recaptcha4j</artifactId>
 			<version>0.0.7</version>
 		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.4</version>
-		</dependency>
+		
 		<!--dependency> <groupId>org.apache.derby</groupId> <artifactId>derby</artifactId> 
 			<version>10.10.1.1</version> </dependency -->
 		<!-- dependency> <groupId>com.fasterxml.jackson.core</groupId> <artifactId>jackson-databind</artifactId> 
@@ -131,8 +144,8 @@
 		<start-class>org.community.CommunityApplication</start-class>
 		<java.version>1.6</java.version>
 	</properties>
-
-	<build>
+ 
+		<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -141,9 +154,9 @@
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.2</version>
-				<!--configuration> <webResources> <resource> <directory>src/main/resources</directory> 
+				<configuration> <webResources> <resource> <directory>src/main/resources</directory> 
 					<includes> <include>community.properties</include> </includes> </resource> 
-					</webResources> </configuration -->
+					</webResources> </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -158,6 +171,8 @@
 			</plugin>
 		</plugins>
 	</build>
+
+ 
 
 	<repositories>
 		<repository>
@@ -177,5 +192,6 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</pluginRepository>
-	</pluginRepositories>
+	</pluginRepositories>	
+	
 </project>

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Envelope
 	{	
 	@Id	
-	private int id;
+	private String id;
 	@Column(name="efrom")
 	private String from;
 	private String subject;
@@ -39,7 +39,7 @@ public class Envelope
 		this.from=from;
 		this.subject=subject;
 		this.url=url;
-		this.id=subject.hashCode();
+		this.id=subject.hashCode()+"";
 		}
 	public Envelope(String from, String subject, String url, JavaMailSender postman)
 		{		
@@ -47,20 +47,52 @@ public class Envelope
 		this.subject=subject;
 		this.url=url;
 		this.postman=postman;
-		this.id=subject.hashCode();
+		this.id=subject.hashCode()+"";
 		System.out.println(this.postman);
 		}
+	public Envelope setPostman(JavaMailSender postman) {
+		Envelope.postman = postman;
+		return this;
+	}
+	public String getId() {
+		return id;
+	}
+	
+	public String getSubject() {
+		return subject;
+	}
+	public String getUrl() {
+		return url;
+	}
 	public String getFrom()
 		{	
 		return from;
 		}
 
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	public void setUrl(String url) {
+		this.url = url;
+	}
 	public void send(String to, Object obj) 
 		{
 		try
-			{			
-			ObjectMapper m = new ObjectMapper();
-			Map<String,Object> model = m.convertValue(obj, Map.class);
+			{
+			Map<String,Object> model = null;
+			if(obj instanceof Map)
+				model=(Map)obj;
+			else
+				{
+				ObjectMapper m = new ObjectMapper();
+				model = m.convertValue(obj, Map.class);
+				}
 				
 			URL url = new URL(this.url);						
 			VelocityEngineFactoryBean vf =  new VelocityEngineFactoryBean();
@@ -77,6 +109,7 @@ public class Envelope
 				message.setFrom(this.from);
 				message.setTo(to);
 				message.setSubject(this.subject);
+			System.out.println("send:"+body);
 				message.setText(body,true);
 				
 			

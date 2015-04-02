@@ -1,5 +1,7 @@
 package org.opencommunity.util;
 
+import net.minidev.json.JSONObject;
+
 import org.opencommunity.exception.InvalidJWT;
 import org.opencommunity.objs.Community;
 import org.opencommunity.services.CommunityService;
@@ -7,13 +9,14 @@ import org.opencommunity.services.CommunityService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.JWSObject;
 import com.nimbusds.jose.JWSVerifier;
+import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.MACVerifier;
 
 public class JWT 
 	{
 	static private ObjectMapper json = new ObjectMapper();
 	private String jwt;
-	private String payload;
+	private Payload payload;
 	public JWT(String jwt,Community community) throws InvalidJWT
 		{
 		try
@@ -27,14 +30,18 @@ public class JWT
 			JWSVerifier verifier = new MACVerifier(secret.getBytes());
 			if(!object.verify(verifier)) throw new InvalidJWT();
 			
-			this.payload= object.getPayload().toString();
+			this.payload= object.getPayload();
 			}
 		catch (Exception e) {
 			throw new InvalidJWT();
 			}
 		}
+	public JSONObject getObject()
+		{
+		return payload.toJSONObject();
+		}
 	public String getPayload() 
 		{
-		return payload;
+		return payload.toString();
 		}
 	}

@@ -88,7 +88,7 @@ public class CommunityTest
 	  	   
 	  	User entity =new RestTemplate().getForObject("http://localhost:8080/community/login?mail={mail}&psw={psw}",User.class,map);
 	  		entity.setData("{\"price\":\"extra\",\"option\":[\"A\",\"B\",\"C\"]}");
-	  		
+	  		entity.setFirstName("nome");
 	  	new RestTemplate().postForObject("http://localhost:8080/community/user",entity,User.class);
 	  	
 	  	System.out.println(entity.getRoles());
