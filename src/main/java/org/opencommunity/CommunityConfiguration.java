@@ -2,6 +2,8 @@ package org.opencommunity;
 
 import org.opencommunity.objs.Community;
 import org.opencommunity.objs.Envelope;
+import org.opencommunity.persistence.CommunityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +23,23 @@ public class CommunityConfiguration
 	@Value("${smtp.user}") 		private String smtpUser;
 	@Value("${smtp.password}") 	private String smtpPassword;
 	@Value("${smtp.auth}") 		private boolean smtpAuth;
+	@Autowired
+	CommunityRepository communityRepository;
 	
 	@Bean
 	public Community community()
 		{
-		Community community =  new Community("base",basePath,new Envelope(from,"welcome",wUrl,postman()),"massimiliano.regis@ekaros.it","pippo");
+		Community community = communityRepository.findOne("base");
+		if(community!=null) return community;
 		
+		community =  new Community(
+				"base",
+				basePath,
+				new Envelope(from,"welcome",wUrl,postman()),
+				"massimiliano.regis@ekaros.it",
+				"pippo");		
+		
+		communityRepository.save(community);
 		return community;
 		}
 		

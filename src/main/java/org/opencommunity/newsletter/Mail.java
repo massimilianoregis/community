@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 public class Mail {
 	@Id
 	public String mail;
+	private String name;
+	
 	@OneToMany(cascade = {CascadeType.ALL})
 	public List<Group> groups=new ArrayList<Group>();
 			
@@ -22,6 +24,12 @@ public class Mail {
 	}
 	public String getMail() {
 		return mail;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 	public void setGroups(List<Group> groups) {
 		this.groups = groups;

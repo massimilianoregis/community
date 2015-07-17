@@ -131,7 +131,7 @@ public class CommunityTest
 	    {
 	    Pending[] entity = template.postForObject(" http://localhost:8080/community/pendings",null,Pending[].class);
 	    for(Pending p:entity)	    	
-	    	System.out.println(p.getUser().getMail()+" "+p.getId());
+	    	System.out.println(p.getUser()+" "+p.getId());
 	    	
 		}
 	    

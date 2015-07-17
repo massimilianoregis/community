@@ -1,15 +1,22 @@
 package org.opencommunity.services;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.opencommunity.exception.InvalidJWT;
+import org.opencommunity.exception.UserJustPresent;
 import org.opencommunity.exception.UserNotFound;
 import org.opencommunity.objs.Community;
+import org.opencommunity.objs.Log;
 import org.opencommunity.objs.Pending;
 import org.opencommunity.objs.Role;
 import org.opencommunity.objs.User;
+import org.opencommunity.persistence.CommunityRepository;
 import org.opencommunity.persistence.Repositories;
+import org.opencommunity.security.Secured;
+import org.opencommunity.security.SilentSecured;
 import org.opencommunity.util.JWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,11 +44,26 @@ public class CommunityService
 	{
 	@Autowired
 	private Community community;
+	@Autowired
+	private CommunityRepository communityRepository;
 	
 		
 	static private ObjectMapper json = new ObjectMapper();
-
 	
+	
+	@RequestMapping("/community")
+	public @ResponseBody List<Community> communities() throws Exception
+		{						
+		return communityRepository.findAll();		
+		}
+	@RequestMapping("/logs")
+	public @ResponseBody List<Log> logs(@RequestParam(required=false) String mail) throws Exception
+		{						
+		if(mail==null)
+			return community.getLogs();
+		else
+			return community.getUser(mail).getLogs();
+		}
 	
 	//@Secured("Admin")		
 	@RequestMapping("/list")
@@ -50,16 +72,30 @@ public class CommunityService
 		return community.getUsers();		
 		}
 	
+	@RequestMapping(value="/new", method = RequestMethod.GET)
+	public @ResponseBody void save(String name, String surname, String mail, String psw) throws UserJustPresent
+		{						
+		User usr = community.addUser(mail);				
+		usr.setName(name, surname);
+		usr.setPassword(psw);
+		usr.addRole(community.getUserRole());
+		
+	    usr.save();
+		}
+	
 	//salva utente
 	@RequestMapping(value="/user", method = RequestMethod.POST)
-	public @ResponseBody void me(@RequestBody User user)
+	public @ResponseBody void me(@RequestBody User user) throws UserJustPresent
 		{						
-		User usr = community.getUser(user.getMail());
-			 usr.setData(user.getData());
-			 usr.setFirstName(user.getFirstName());
-			 usr.setLastName(user.getLastName());
-			 usr.setData(user.getData());
-			 //usr.setRoot(community.getRoot()+"/"+usr.getMail());
+		User usr = community.getUser(user.getMail());		
+		if(usr==null)	
+			{
+			usr = community.addUser(user.getMail());
+			usr.addRole(community.getUserRole());
+			}
+		
+		usr.extend(user);
+			 
 	    usr.save();
 		}
 	//leggi lista utenti
@@ -69,9 +105,19 @@ public class CommunityService
 		return community.getUsers();		
 		}
 	//leggi utente singolo
-	@RequestMapping(value= "/user/{mail:.+}",method=RequestMethod.GET)
+	@RequestMapping(value= "/user/{mail:.*}",method=RequestMethod.GET)
 	public @ResponseBody User user(@PathVariable String mail) throws Exception
 		{							
+		try{
+		return community.getUser(mail);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+		}
+	@RequestMapping(value= "/userget",method=RequestMethod.GET)
+	public @ResponseBody User userget(String mail) throws Exception
+		{									
 		return community.getUser(mail);		
 		}
 	
@@ -83,7 +129,7 @@ public class CommunityService
 		}
 	@RequestMapping("/confirm/{id}")
 	public @ResponseBody void confirm(@PathVariable String id) throws Exception
-		{		
+		{			
 		community.confirmRegistration(id);		
 		}
 
@@ -110,14 +156,26 @@ public class CommunityService
 	@RequestMapping(value="/register",method=RequestMethod.POST)
 	public @ResponseBody User registerPost(@RequestBody RequestRegister request) throws Exception
 		{
-		return register(request.getMail(), request.getPsw(), request.getFirst_name(), request.getLast_name());
+		User user = community.addUser(request.getMail()); 
+			user.setName(request.getFirst_name(),request.getLast_name());
+			user.setPassword(request.getPsw());			
+		if(request.getData()!=null)
+			user.setData(request.getData());
+		else
+			user.setData(new HashMap());		
+			
+		user.register(community.getRole(request.getRole()));
+		return user;
 		}
 	@RequestMapping(value="/register",method=RequestMethod.GET)
-	public @ResponseBody User register(@RequestParam(defaultValue="") String mail, String psw, String first_name, String last_name) throws Exception
+	public @ResponseBody User register(@RequestParam(defaultValue="") String mail, String psw, String first_name, String last_name,@RequestParam(required=false) String role) throws Exception
 		{				
 		User user = community.addUser(mail); 
 			user.setName(first_name,last_name);
 			user.setPassword(psw);
+		if(role!=null)			
+			user.addRole(community.getRole(role));
+			user.setData(new HashMap());	
 		user.register();
 		
 		return user;
@@ -179,14 +237,33 @@ public class CommunityService
 		return org.apache.commons.io.IOUtils.toByteArray(community.me().getFile(name));		
 		}
 	
+	@RequestMapping(value="/user/{mail:.+}/extra", method = RequestMethod.POST)
+	public @ResponseBody void saveData(@PathVariable String mail,@RequestBody Map map) 
+		{	
+		User user = this.community.getUser(mail);
+		Map data = user.getData();
+		if(user.getData()==null) 				
+			data=new HashMap();							
+			data.putAll(map);
+			
+		user.setData(data);
+		user.save();
+		}
 	
 	@RequestMapping(value="/jwt")
 	public @ResponseBody User check(String jwt) throws InvalidJWT
 		{			
-		return new JWTResponse(
-				community.getUser( (String)new JWT(jwt,this.community).getObject().get("mail") ),
-				this.community);				
+		User user = this.community.getUserFromJWT(jwt);
+		return new JWTResponse(user, this.community);
 		}
+	
+	@SilentSecured("admin")		
+	@RequestMapping(value="/accessTest")
+	public @ResponseBody String test()
+		{			
+		return "CIAO";				
+		}
+	
 	static public class RequestLogin
 		{
 		private String mail;
@@ -203,6 +280,8 @@ public class CommunityService
 		private String psw;
 		private String first_name;
 		private String last_name;
+		private Map data;
+		private String role;
 		
 		public String getMail() {return mail;}
 		public void setMail(String mail) {this.mail = mail;}
@@ -212,6 +291,10 @@ public class CommunityService
 		public void setFirst_name(String first_name) {this.first_name = first_name;}
 		public String getLast_name() {return last_name;}
 		public void setLast_name(String last_name) {this.last_name = last_name;}
+		public Map getData() 			{return data;}
+		public void setData(Map data) 	{this.data = data;}
+		public String getRole() {return role;}
+		public void setRole(String role) {this.role = role;}
 		}
 	static public class JWTResponse extends User
 		{
@@ -224,6 +307,7 @@ public class CommunityService
 			setLastName(user.getLastName());
 			setMail(user.getMail());
 			setRegisterId(user.getRegisterId());
+			setRoles(user.getRoles());
 //			setRoot(user.getRoot());
 			this.community=community.getName();
 			

@@ -46,8 +46,11 @@ public class Envelope
 		this.from=from;
 		this.subject=subject;
 		this.url=url;
+		
 		this.postman=postman;
 		this.id=subject.hashCode()+"";
+		System.out.println("---------------------------");
+		System.out.println(this.url);
 		System.out.println(this.postman);
 		}
 	public Envelope setPostman(JavaMailSender postman) {
@@ -98,6 +101,7 @@ public class Envelope
 			VelocityEngineFactoryBean vf =  new VelocityEngineFactoryBean();
 				vf.setResourceLoaderPath(url.getProtocol()+"://"+url.getHost()+":"+url.getPort());
 				vf.setPreferFileSystemAccess(false);			
+			
 			String body = VelocityEngineUtils.mergeTemplateIntoString(vf.createVelocityEngine(), url.getPath(), model);
 			
 			VelocityContext context = new VelocityContext(model);				

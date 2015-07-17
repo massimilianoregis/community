@@ -1,3 +1,0 @@
-Benvenuto $mail
-
-conferma la tua registrazione <A href="http://localhost:8080/community/user/confirm?id=$registerId">cliccando qui</A>> 

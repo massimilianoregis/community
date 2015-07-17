@@ -4,6 +4,7 @@ import net.minidev.json.JSONObject;
 
 import org.opencommunity.exception.InvalidJWT;
 import org.opencommunity.objs.Community;
+import org.opencommunity.objs.User;
 import org.opencommunity.services.CommunityService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +18,8 @@ public class JWT
 	static private ObjectMapper json = new ObjectMapper();
 	private String jwt;
 	private Payload payload;
+	
+	
 	public JWT(String jwt,Community community) throws InvalidJWT
 		{
 		try
@@ -35,6 +38,12 @@ public class JWT
 		catch (Exception e) {
 			throw new InvalidJWT();
 			}
+		}
+	public User getUser() throws Exception
+		{		
+		System.out.println("payload "+getPayload());
+		
+		return (User)this.json.readValue(getPayload(),User.class);		
 		}
 	public JSONObject getObject()
 		{

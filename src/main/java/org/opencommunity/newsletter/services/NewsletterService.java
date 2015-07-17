@@ -3,6 +3,7 @@ package org.opencommunity.newsletter.services;
 import java.util.List;
 
 import org.opencommunity.newsletter.Mail;
+import org.opencommunity.newsletter.Mail.Group;
 import org.opencommunity.newsletter.NewsLetter;
 import org.opencommunity.objs.Envelope;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +49,22 @@ public class NewsletterService
 		}
 	
 	@RequestMapping(value="/send", method = RequestMethod.GET)
-	public @ResponseBody void sendTemplate(String mail,String template)
+	public @ResponseBody boolean sendTemplate(String mail,String template)
 		{
-		Mail to = newsletter.getMail(mail);
-		newsletter.getTemplate(template).send(to.getMail(), to);
+		try
+			{
+			Mail to = newsletter.getMail(mail);
+			newsletter.getTemplate(template).send(to.getMail(), to);
+			for(Group gr :to.getGroups())
+				if(gr.getName().equals(template))
+					gr.setSent(true);
+			this.newsletter.save(to);
+			return true;
+			}
+		catch(Exception e)
+			{
+			return false;
+			}
 		}
 	@RequestMapping(value="/sendAll", method = RequestMethod.GET)
 	public @ResponseBody void sendTemplate(String template)

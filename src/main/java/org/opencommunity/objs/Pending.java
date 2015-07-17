@@ -18,74 +18,68 @@ public class Pending
 	private String id;
 	@ManyToOne
 	private Role role;
+	@ManyToOne
+	private Role role2;
 	@ManyToOne	
 	private User user;
 		
 	public Pending()
-	{}
+		{}
 	public Pending(User user, Role role)
 		{
 		this.id= UUID.randomUUID().toString();
 		this.user=user;
-		this.role=role;		
+		this.role=role;				
 		}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#save()
-	 */
+	public Pending(User user, Role role,Role role2)
+		{
+		this.id= UUID.randomUUID().toString();
+		this.user=user;
+		this.role=role;		
+		this.role2=role2;
+		}
 	
 	public String save()
 		{
 		Repositories.pending.save(this);
 		return id;
 		}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#execute()
-	 */
 	
 	public void execute()
-		{
+		{		
 		user.addRole(role);
+		user.addRole(role2);
+		
 		user.save();
 		Repositories.pending.delete(id);
 		}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#getId()
-	 */
 	
 	public String getId() {
 		return id;
 	}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#setId(java.lang.String)
-	 */
+	
 	
 	public void setId(String id) {
 		this.id = id;
 	}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#getRole()
-	 */
 	
-	public Role getRole() {
-		return role;
+	public String getRole() {
+		return role.getId();
 	}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#setRole(org.opencommunity.Role)
-	 */
-	
+	public String getRole2() {
+		if(role2==null) return null;
+		return role2.getId();
+	}
+	public void setRole2(Role role2) {
+		this.role2 = role2;
+	}
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#getUser()
-	 */
 	
-	public User getUser() {
-		return user;
+	public String getUser() {
+		return user.getMail();
 	}
-	/* (non-Javadoc)
-	 * @see org.opencommunity.base.Pending#setUser(org.opencommunity.User)
-	 */
 	
 	public void setUser(User user) {
 		this.user = user;

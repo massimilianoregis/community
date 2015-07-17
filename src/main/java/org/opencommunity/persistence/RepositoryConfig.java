@@ -76,7 +76,7 @@ public class RepositoryConfig {
 	  @Bean 
 	  @Primary
 	  public LocalContainerEntityManagerFactoryBean entityManagerCommunityFactory() {
-		  System.out.println("\n\n*****************\nCommunity\nrepositoryConfig\nEntity Manager\n**********************\n\n");
+		  System.out.println("\n\n*****************\nCommunity v0.1.0\nrepositoryConfig\nEntity Manager\n**********************\n\n");
 		  
 		  JpaVendorAdapter vendorAdapter = jpaVendorAdapter();
 		  LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();

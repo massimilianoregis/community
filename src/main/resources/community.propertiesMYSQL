@@ -9,8 +9,8 @@ resetPsw.url	=	http://localhost:8080/mail/welcome.mail
 #smtp config
 smtp.url		=	smtp.gmail.com
 smtp.port		=	587
-smtp.user		=	massimiliano.regis@gmail.com
-smtp.password	=	2c0d2r02
+smtp.user		=	sviluppo@ekaros.it	
+smtp.password	=	pippero123
 smtp.auth		=	true
 
 #community root for user's directory

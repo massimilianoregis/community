@@ -5,8 +5,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -46,6 +48,7 @@ public class User implements Serializable
 	private String lastName;
 	private String root;
 	private Long lastaccesstime;
+	private Date sendRegisterMail;
 	
 	@Transient
 	private Integer logtry=0;
@@ -122,6 +125,11 @@ public class User implements Serializable
 	public Set<Role> getRoles() 	{return roles;}
 	public String getRegisterId() 	{return registerId;}
 	public Integer getLogtry() 		{return logtry;}
+	@JsonIgnore
+	public List<Log> getLogs()		
+		{
+		return Repositories.log.findLogByUser(this.mail);
+		}
 
 	
 	@JsonIgnore
@@ -154,8 +162,8 @@ public class User implements Serializable
 		{
 		for(Role r : roles)
 			{			
-			if(r.getId().equals(role)) 				return true;
-			if(r.getId().equals(company+"."+role))	return true;
+			if(company==null && r.getName().equals(role)) 		return true;
+			if(r.getId().equals(company+"."+role))				return true;
 			}
 		return false;
 		}
@@ -169,17 +177,23 @@ public class User implements Serializable
 	
 	public void addRole(Role role)
 		{
+		if(role==null) return;
 		this.roles.add(role);
 		}
 	
 	
 	public void register()
-		{
-		this.save();
+		{		
+		save();
 		this.registerId = new Pending(this,Community.getInstance().getUserRole()).save();
 		this.sendWelcome();
 		}
-	
+	public void register(Role role)
+		{		
+		save();
+		this.registerId = new Pending(this,Community.getInstance().getUserRole(),role).save();
+		this.sendWelcome();
+		}
 	
 	public void save()
 		{				
@@ -190,6 +204,8 @@ public class User implements Serializable
 	public void sendWelcome()
 		{
 		Community.getInstance().sendWelcomeMail(this);
+		sendRegisterMail=new Date();
+		save();
 		}
 	
 	
@@ -218,6 +234,19 @@ public class User implements Serializable
 		System.out.println(this.root);
 		return new FileInputStream(new File(this.root,file));
 		}
+	public Long getLastaccesstime() {
+		return lastaccesstime;
+	}
+	public void setLastaccesstime(Long lastaccesstime) {
+		this.lastaccesstime = lastaccesstime;
+	}
+	public Date getSendRegisterMail() {		
+		return sendRegisterMail;
+	}
+	public void setSendRegisterMail(Date sendRegisterMail) {
+		this.sendRegisterMail = sendRegisterMail;
+	}
+	
 //	public void setJsondata(String jsondata) throws Exception 
 //		{
 //		System.out.println("------SET-----");
@@ -233,6 +262,15 @@ public class User implements Serializable
 	public String toString() {
 		return this.mail;
 	}
+	
+	
 	static private 	ObjectMapper mapper = new ObjectMapper();	
 
+	public void extend(User user)
+		{
+		this.firstName=user.firstName;
+		this.lastName=user.lastName;
+		if(user.jsondata!=null)	this.jsondata=user.jsondata;
+		if(user.psw!=null)		this.psw=user.psw;		
+		}
 }
